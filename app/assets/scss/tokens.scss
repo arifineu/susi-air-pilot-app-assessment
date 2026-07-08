@@ -146,6 +146,10 @@ body {
   background: var(--color-bg);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
+  // Safety net against horizontal scroll on 390px screens — component-level
+  // overflow (carousel, calendar cells) still works because it's set on
+  // inner elements, not body.
+  overflow-x: hidden;
   font-size: var(--fs-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
