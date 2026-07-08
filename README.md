@@ -2,7 +2,7 @@
 
 A mobile-first Nuxt 4 web app for Susi Air pilots. Three primary surfaces — Sign In, Home (dashboard), Schedule (calendar) — wired against three JSON mocks. No backend; all data is read from `app/assets/data/`. Built as a technical test for Susi Air's pilot companion app brief.
 
-**Status:** production-ready. 286 unit/component specs + 123 Storybook smoke tests passing, ~98% statement coverage, installable PWA, deployable to Vercel out of the box.
+**Status:** production-ready. 311 unit/component specs + 128 Storybook smoke tests passing, ~98% statement coverage, installable PWA, deployable to Vercel out of the box.
 
 ---
 
@@ -74,7 +74,7 @@ app/
 │   ├── data/           # 4 JSON mocks (documents, flight-hours, schedules, news)
 │   └── scss/tokens.scss # SCSS vars + CSS custom properties + resets
 ├── components/
-│   ├── atoms/          # 10 — Button, Input, Avatar, Badge, Icon, BrandLogo, ProgressRing, ProgressBar, Chip, Skeleton
+│   ├── atoms/          # 11 — Alert, Button, Input, Avatar, Badge, Icon, BrandLogo, ProgressRing, ProgressBar, Chip, Skeleton
 │   ├── molecules/      # 9  — FormField, FlightRoute, NewsCard, LimitCard, DocumentListItem, CalendarDay, LegendItem, RangeToggleGroup, BottomNavItem
 │   └── organisms/      # 10 — DashboardHeader, BottomNavigation, ScheduleLegend, SignInForm, UpcomingFlightCard, MyDocumentsList, LatestNewsCarousel, FlightHoursTrendChart, HoursToLimitSection, ScheduleCalendarGrid
 ├── composables/        # 5 — useDocumentExpiry, useRollingSum, useFlightLimits, useDutyCalendar, useLoadingDelay
@@ -109,7 +109,7 @@ eslint.config.mjs       # Flat config via @nuxt/eslint
 
 Three layers, each with a clear contract:
 
-- **Atoms** (10) — presentational primitives. Pure props in, emits out. Never import stores, never call composables. (e.g. `BaseButton`, `Avatar`, `Icon`).
+- **Atoms** (11) — presentational primitives. Pure props in, emits out. Never import stores, never call composables. (e.g. `BaseButton`, `Avatar`, `Icon`, `Alert`).
 - **Molecules** (9) — small compositions of atoms + at most one pure composable (e.g. `DocumentListItem` calls `computeDocumentExpiry`). Still no store access.
 - **Organisms** (10) — section-level compositions. Receive data via props (semi-smart pattern — see below), consume pure composables for derived state. Don't call Pinia stores directly.
 
@@ -178,7 +178,7 @@ Mount each component with curated props, assert on rendered output. `app/compone
 
 ### 3. Story smoke tests (`@storybook/test-runner` + Playwright)
 
-Each of the 123 stories gets visited in a real headless Chromium. Test-runner asserts no uncaught errors / console errors. This is the only layer that catches integration bugs like "Storybook can't resolve `~/components/...`" or "this story passes `:width="80%"` which Vue parses as a JS expression and crashes" — both of which actually happened during development and were caught here first.
+Each of the 128 stories gets visited in a real headless Chromium. Test-runner asserts no uncaught errors / console errors. This is the only layer that catches integration bugs like "Storybook can't resolve `~/components/...`" or "this story passes `:width="80%"` which Vue parses as a JS expression and crashes" — both of which actually happened during development and were caught here first.
 
 ### Coverage
 
@@ -213,7 +213,7 @@ The brief's "Things to Double-Check Before Calling It Done" — every bullet ans
 - [x] **Rolling-sum chart X-axis is always ±7 days from "today" (2026-05-31).** Verified in `app/composables/useRollingSum.spec.ts` → "display window is INDEPENDENT of windowDays".
 - [x] **Document badges match the 5 worked examples in §3.1 exactly.** Verified in `app/composables/useDocumentExpiry.spec.ts` → all 5 cases (`doc_recurrent → safe`, `doc_ppc → safe`, `doc_license → expired`, `doc_medical → soon`, `doc_security → expired`).
 - [x] **Calendar tick-vs-number badge logic.** Tick only when `count_logbooks === count_schedules`. Verified in `app/components/molecules/CalendarDay.spec.ts` (4 cases).
-- [x] **Every atom/molecule/organism has a Storybook story AND a spec file.** 29 stories + 40 spec files; 100% component coverage.
+- [x] **Every atom/molecule/organism has a Storybook story AND a spec file.** 30 stories + 41 spec files; 100% component coverage.
 - [x] **No component reaches into `assets/data/*.json` directly except the Pinia stores.** Atoms/molecules/organisms receive data as props. Pages pull from stores and pass down. The only direct JSON import outside `stores/` is in `*.stories.ts` files (which is appropriate — stories are test fixtures, not production code).
 - [x] **Mobile-first verified at 390px.** `app/components/organisms/HoursToLimitSection.stories.ts` → `Mobile390px` story locks the viewport to 390×844. `app/assets/scss/tokens.scss` sets `overflow-x: hidden` on `html, body` as a safety net.
 - [x] **Numeric/data values are bold-weighted.** `app/assets/scss/tokens.scss` defines `--fw-bold: 700` and `--fw-extrabold: 800`; used throughout for hours, times, counts. See `.limit-card__remaining-value`, `.flight-route__icao`, `.calendar-day__base`, etc.
