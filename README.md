@@ -9,7 +9,7 @@ A mobile-first Nuxt 4 web app for Susi Air pilots. Three primary surfaces — Si
 ## Live demo
 
 - **App:** [https://susi-air-pilot-app-assessment.vercel.app/](https://susi-air-pilot-app-assessment.vercel.app/)
-- **Storybook:** [https://susi-air-pilot-app-assessment-storybook.vercel.app](https://susi-air-pilot-app-assessment-storybook.vercel.app)
+- **Storybook:** [https://susi-air-pilot-app-assessment-story.vercel.app/](https://susi-air-pilot-app-assessment-story.vercel.app/)
 
 Both deploy from this repo on Vercel — the Nuxt app auto-detects via the Vercel Nuxt preset, and Storybook is a separate Vercel project with overridden build settings (`npm run build-storybook` → `storybook-static/`).
 
