@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typecheck:
+    name: Lint + Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # typecheck runs `nuxt prepare` internally which generates the .nuxt types.
+      - name: Typecheck
+        run: npm run typecheck
+
+      # ESLint without --fix so CI fails on unfixable issues instead of silently
+      # rewriting them. Lint warnings (e.g. vue/require-default-prop) don't fail.
+      - name: Lint
+        run: npx eslint . --max-warnings=-1
+
+  test:
+    name: Unit + Component Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Test with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+  storybook:
+    name: Storybook Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Playwright is needed by @storybook/test-runner; install only the
+      # headless chromium browser to keep the job lean.
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Storybook tests
+        run: npm run test:storybook:ci
+
+      - name: Upload Storybook build (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+          retention-days: 7
