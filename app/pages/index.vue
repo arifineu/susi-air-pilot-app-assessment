@@ -10,6 +10,10 @@ definePageMeta({ layout: 'auth' })
 const loading = ref(false)
 const error = ref('')
 
+// Inline CRD contact alert — replaces the intimidating window.alert.
+// Shown when the user clicks "Need help? Contact CRD" inside SignInForm.
+const showCrdAlert = ref(false)
+
 interface Credentials {
   pilotId: string
   password: string
@@ -30,13 +34,36 @@ async function onSubmit(_creds: Credentials) {
 }
 
 function onContactCrd() {
-  // Phase 6 will replace this with a real toast/modal.
-  if (typeof window !== 'undefined') {
-    window.alert('Contact CRD: +62 21 5590 0010 (24/7)')
-  }
+  showCrdAlert.value = true
 }
 </script>
 
 <template>
-  <SignInForm :loading="loading" :error="error" @submit="onSubmit" @contact-crd="onContactCrd" />
+  <div class="sign-in-page">
+    <Alert
+      v-if="showCrdAlert"
+      variant="info"
+      title="Need help?"
+      dismissible
+      class="sign-in-page__alert"
+      @dismiss="showCrdAlert = false"
+    >
+      Contact the <strong>Crew Roster Desk (CRD)</strong> at
+      <strong>+62 21 5590 0010</strong> — available 24/7.
+    </Alert>
+
+    <SignInForm :loading="loading" :error="error" @submit="onSubmit" @contact-crd="onContactCrd" />
+  </div>
 </template>
+
+<style scoped lang="scss">
+.sign-in-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  &__alert {
+    width: 100%;
+  }
+}
+</style>
