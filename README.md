@@ -9,9 +9,9 @@ A mobile-first Nuxt 4 web app for Susi Air pilots. Three primary surfaces — Si
 ## Live demo
 
 - **App:** [https://susi-air-pilot-app-assessment.vercel.app/](https://susi-air-pilot-app-assessment.vercel.app/)
-- **Storybook:** add Chromatic / Vercel-storybook URL here
+- **Storybook:** [https://susi-air-pilot-app-assessment-storybook.vercel.app](https://susi-air-pilot-app-assessment-storybook.vercel.app)
 
-Both are deployable from this repo via the included `vercel.json`.
+Both deploy from this repo on Vercel — the Nuxt app auto-detects via the Vercel Nuxt preset, and Storybook is a separate Vercel project with overridden build settings (`npm run build-storybook` → `storybook-static/`).
 
 ---
 
@@ -62,7 +62,7 @@ Sign In is at `/` — click "Sign In" (any input works; no auth check per brief)
 | Linting | **ESLint 10** flat config + `@nuxt/eslint` | Official Nuxt ESLint module. |
 | Formatting | **Prettier 3** | Standard. |
 | PWA | **Hand-written manifest + service worker** | See "Why hand-rolled PWA" below. |
-| Deploys | **Vercel** (Nuxt preset) | Zero-config; `vercel.json` included. |
+| Deploys | **Vercel** (Nuxt preset) | Zero-config auto-detect for the app; Storybook deploys as a second Vercel project with overridden build command. |
 
 ## Architecture
 
@@ -100,7 +100,6 @@ tests/
 ├── preview.ts          # Viewport presets + backgrounds
 └── test-runner.ts      # Storybook smoke-test config
 .github/workflows/ci.yml  # Lint + typecheck + test:coverage + test:storybook:ci
-vercel.json
 nuxt.config.ts
 vitest.config.ts
 eslint.config.mjs       # Flat config via @nuxt/eslint
