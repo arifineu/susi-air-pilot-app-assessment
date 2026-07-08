@@ -10,6 +10,7 @@
  */
 import { usePilotStore } from '~/stores/pilot'
 import { useSchedulesStore } from '~/stores/schedules'
+import { navigateTo } from '#app'
 import { useFlightHoursStore } from '~/stores/flightHours'
 import { useDocumentsStore } from '~/stores/documents'
 import { useNewsStore } from '~/stores/news'
@@ -21,6 +22,11 @@ const schedulesStore = useSchedulesStore()
 const flightHoursStore = useFlightHoursStore()
 const documentsStore = useDocumentsStore()
 const newsStore = useNewsStore()
+
+function onLogout() {
+  // No real auth — just return to the sign-in screen.
+  navigateTo('/')
+}
 
 const loading = useLoadingDelay(600)
 
@@ -39,7 +45,13 @@ const upcomingArrival = computed(() => {
 
 <template>
   <div class="home-page">
-    <DashboardHeader :pilot-name="pilotStore.name" :notification-count="0" />
+    <DashboardHeader
+      :pilot-name="pilotStore.name"
+      :pilot-id="pilotStore.pilotId"
+      :total-flight-hours="pilotStore.totalFlightHours"
+      :notification-count="0"
+      @logout="onLogout"
+    />
 
     <section class="home-page__section">
       <template v-if="loading">

@@ -1,6 +1,7 @@
 {
   "pilot": {
     "name": "John Doe",
+    "pilotId": "PSA-1042",
     "totalFlightHours": 1444.5
   },
   "limits": {

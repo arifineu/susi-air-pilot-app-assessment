@@ -41,6 +41,7 @@ export interface Legend {
 /** Pilot info (from mock-flight-hours.json pilot). */
 export interface Pilot {
   name: string
+  pilotId: string
   totalFlightHours: number
 }
 

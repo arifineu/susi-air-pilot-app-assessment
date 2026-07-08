@@ -11,6 +11,7 @@ export const usePilotStore = defineStore('pilot', () => {
   const pilot = ref<Pilot>(pilotData.pilot)
 
   const name = computed(() => pilot.value.name)
+  const pilotId = computed(() => pilot.value.pilotId)
   const totalFlightHours = computed(() => pilot.value.totalFlightHours)
 
   /** Initials for the Avatar fallback. */
@@ -21,5 +22,5 @@ export const usePilotStore = defineStore('pilot', () => {
     return (first + last).toUpperCase() || '?'
   })
 
-  return { pilot, name, totalFlightHours, initials }
+  return { pilot, name, pilotId, totalFlightHours, initials }
 })
