@@ -55,7 +55,7 @@ Sign In is at `/` — click "Sign In" (any input works; no auth check per brief)
 | Fonts | **`@nuxt/fonts`** (Plus Jakarta Sans) | Auto-serves fonts from our own origin — no Google Fonts request (privacy + offline + faster). |
 | Icons | **`@lucide/vue`** (Lucide) | Line-style only, defaults to 1.75px stroke (within brief's 1.5–2px rule). |
 | Charts | **`chart.js@4` + `vue-chartjs@5`** | Tree-shaken to ~50KB, real canvas (not SVG), battle-tested. |
-| Component dev | **Storybook 10** (`@storybook/vue3-vite`) | Isolated component development + story smoke tests. |
+| Component dev | **Storybook 10** (`@storybook/vue3-vite` + `@storybook/addon-docs`) | Isolated component development with Docs, Controls, Actions, Viewport; story smoke tests. |
 | Unit tests | **Vitest 4** + `@vue/test-utils` + `happy-dom` | Fast, ESM-native, generous watch UX. |
 | Story tests | **`@storybook/test-runner`** (Playwright) | Catches integration bugs unit tests miss (caught a real bug on first run). |
 | Type checking | **TypeScript 6** + `vue-tsc 3` | `strict: true` + Nuxt 4's default `noUncheckedIndexedAccess: true`. |
@@ -96,7 +96,7 @@ scripts/
 tests/
 └── setup-canvas-mock.ts         # Stubs HTMLCanvasElement.getContext for chart.js in happy-dom
 .storybook/
-├── main.ts             # Stories globs + Vite plugins (vue, auto-import, components)
+├── main.ts             # Stories globs + Vite plugins (vue, auto-import, components) + docs addon
 ├── preview.ts          # Viewport presets + backgrounds
 └── test-runner.ts      # Storybook smoke-test config
 .github/workflows/ci.yml  # Lint + typecheck + test:coverage + test:storybook:ci

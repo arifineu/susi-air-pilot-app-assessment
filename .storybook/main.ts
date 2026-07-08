@@ -9,7 +9,7 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 
 const config: StorybookConfig = {
   stories: ['../app/components/**/*.stories.ts', '../app/composables/**/*.stories.ts'],
-  addons: [],
+  addons: ['@storybook/addon-docs'],
   framework: {
     name: '@storybook/vue3-vite',
     options: {},
