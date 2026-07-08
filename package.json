@@ -13,32 +13,43 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:storybook": "wait-on http://localhost:6006 && test-storybook",
+    "test:storybook:ci": "concurrently -k -s first -n SB,TEST -c cyan,blue \"npm run storybook -- --ci\" \"wait-on tcp:6006 && test-storybook\"",
     "typecheck": "nuxt prepare && vue-tsc --noEmit",
+    "generate-pwa-icons": "node scripts/generate-pwa-icons.mjs",
     "lint": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,vue,scss,json,md}\""
   },
   "dependencies": {
     "@lucide/vue": "^1.23.0",
+    "chart.js": "^4.5.1",
     "nuxt": "^4.4.8",
     "pinia": "^3.0.4",
-    "vue": "^3.5.39"
+    "vue": "^3.5.39",
+    "vue-chartjs": "^5.3.3"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/fonts": "^0.14.0",
     "@pinia/nuxt": "^0.11.3",
+    "@storybook/test-runner": "^0.24.4",
     "@storybook/vue3": "^10.4.6",
     "@storybook/vue3-vite": "^10.4.6",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^4.1.10",
     "@vue/test-utils": "^2.4.11",
+    "concurrently": "^10.0.3",
     "eslint": "^10.6.0",
     "happy-dom": "^20.10.6",
     "prettier": "^3.9.4",
     "sass": "^1.81.0",
+    "sharp": "^0.35.3",
     "storybook": "^10.4.6",
     "typescript": "^6.0.3",
+    "unplugin-auto-import": "^21.0.0",
+    "unplugin-vue-components": "^32.1.0",
     "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.6"
+    "vue-tsc": "^3.3.6",
+    "wait-on": "^9.0.10"
   }
 }
