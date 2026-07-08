@@ -4,7 +4,6 @@
  * SVG ring that fills 0..max. Auto-assigns warning/danger modifier when value
  * crosses thresholds (default 80% / 100% of max).
  */
-import { computed } from 'vue'
 
 interface Props {
   value: number
@@ -15,6 +14,8 @@ interface Props {
   dangerThreshold?: number // fraction of max, e.g. 1
   unit?: string
   label?: string
+  /** Optional formatter for the center value text (e.g. to round floats). */
+  formatValue?: (value: number) => string
 }
 const props = withDefaults(defineProps<Props>(), {
   max: 100,
@@ -23,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
   warningThreshold: 0.8,
   dangerThreshold: 1,
   unit: '',
+  formatValue: undefined,
 })
 
 const clamped = computed(() => Math.max(0, Math.min(props.value, props.max)))
@@ -37,6 +39,10 @@ const state = computed<'safe' | 'warning' | 'danger'>(() => {
   if (ratio.value >= props.warningThreshold) return 'warning'
   return 'safe'
 })
+
+const valueText = computed(() =>
+  typeof props.formatValue === 'function' ? props.formatValue(props.value) : String(props.value),
+)
 </script>
 
 <template>
@@ -64,7 +70,7 @@ const state = computed<'safe' | 'warning' | 'danger'>(() => {
       />
     </svg>
     <div class="progress-ring__center">
-      <span class="progress-ring__value-text">{{ value }}<span v-if="unit" class="progress-ring__unit">{{ unit }}</span></span>
+      <span class="progress-ring__value-text">{{ valueText }}<span v-if="unit" class="progress-ring__unit">{{ unit }}</span></span>
       <span v-if="label" class="progress-ring__label">{{ label }}</span>
     </div>
   </div>
