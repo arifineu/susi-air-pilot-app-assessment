@@ -237,10 +237,6 @@ The brief's "Things to Double-Check Before Calling It Done" — every bullet ans
 - **Stub `tap-a-date` modal.** The schedule page shows a placeholder modal ("Detail page coming soon") per brief. A real detail page would show that day's full duty log.
 - **Analytics.** No analytics on which toggle / page / cell is most used. Real version would have PostHog or Vercel Analytics.
 
-## Submitting
-
-Per the brief: email **it.admin@susiair.com** with the GitHub repo URL + the Vercel deploy URL.
-
 ---
 
 ## License
