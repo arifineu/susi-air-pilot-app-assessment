@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "category": "Operations",
+      "title": "New Cessna Grand Caravan EX joins the fleet",
+      "excerpt": "The 2026 airframe boosts capacity on the Sumatra trunk routes, replacing two older PC-12s rotationally through August.",
+      "imageUrl": "https://picsum.photos/seed/susi-news-1/600/360",
+      "date": "May 28, 2026",
+      "readTime": "3 min"
+    },
+    {
+      "id": "2",
+      "category": "Safety",
+      "title": "Q3 2026 recurrent simulator training schedule",
+      "excerpt": "All captains and first officers must complete the recurrent sim block by 30 September. Slots are open in the CRD portal.",
+      "imageUrl": "https://picsum.photos/seed/susi-news-2/600/360",
+      "date": "May 24, 2026",
+      "readTime": "5 min"
+    },
+    {
+      "id": "3",
+      "category": "Notice",
+      "title": "CRD operating hours during the Eid period",
+      "excerpt": "Reduced hours from 17–21 June. On-call coverage published in the internal calendar; emergency line unchanged.",
+      "imageUrl": "https://picsum.photos/seed/susi-news-3/600/360",
+      "date": "May 20, 2026",
+      "readTime": "2 min"
+    },
+    {
+      "id": "4",
+      "category": "Fleet",
+      "title": "PC-12 engine overhaul programme kicks off",
+      "excerpt": "Six airframes rotate through the maintenance bay through August. Refer to the fleet status board for tail assignments.",
+      "imageUrl": "https://picsum.photos/seed/susi-news-4/600/360",
+      "date": "May 15, 2026",
+      "readTime": "4 min"
+    }
+  ]
+}
