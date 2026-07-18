@@ -14,6 +14,7 @@ import { navigateTo } from '#app'
 import { useFlightHoursStore } from '~/stores/flightHours'
 import { useDocumentsStore } from '~/stores/documents'
 import { useNewsStore } from '~/stores/news'
+import { addDays } from '~/utils/format'
 import type { NotificationItem } from '~/types'
 
 definePageMeta({ layout: 'default' })
@@ -68,14 +69,24 @@ const loading = useLoadingDelay(600)
 // Per brief §3.2, the chart's dev "today" is 2026-05-31.
 const FLIGHT_HOURS_TODAY = '2026-05-31'
 
-// Decode the next upcoming schedule's base_name into a fake departure/arrival
-// pair. The mock doesn't include route legs, so we surface the duty's base
-// as the arrival and Padang (PDG) as the canonical departure.
-const upcomingDeparture = computed(() => ({ icao: 'PDG', city: 'Padang' }))
-const upcomingArrival = computed(() => {
-  const next = schedulesStore.nextUpcomingSchedule
-  return next ? { icao: next.base_name } : { icao: '—' }
-})
+// Next upcoming flight (and its parent schedule) for the dashboard card.
+const upcomingFlight = computed(() => schedulesStore.nextUpcomingFlight)
+
+// "View all" overlay state — modal browses a 4-day window (today + next 3).
+// Built once as a computed so the modal can scrub through without per-page
+// re-fetches; the store's flightsForDate is cheap (Map lookup).
+const DAY_FLIGHTS_WINDOW = 3 // today + next 3 calendar days
+const dayFlightsOpen = ref(false)
+const dayFlightsWindow = computed(() =>
+  Array.from({ length: DAY_FLIGHTS_WINDOW + 1 }, (_, i) => {
+    const date = addDays(schedulesStore.today, i)
+    return { date, flights: schedulesStore.flightsForDate(date) }
+  }),
+)
+
+function openDayFlights() {
+  dayFlightsOpen.value = true
+}
 </script>
 
 <template>
@@ -85,6 +96,7 @@ const upcomingArrival = computed(() => {
       :pilot-id="pilotStore.pilotId"
       :total-flight-hours="pilotStore.totalFlightHours"
       :notifications="notifications"
+      :today="schedulesStore.today"
       @logout="onLogout"
     />
 
@@ -95,12 +107,18 @@ const upcomingArrival = computed(() => {
         </div>
       </template>
       <OrganismsDashboardUpcomingFlightCard
-        v-else-if="schedulesStore.nextUpcomingSchedule"
-        :schedule="schedulesStore.nextUpcomingSchedule"
-        :departure="upcomingDeparture"
-        :arrival="upcomingArrival"
+        v-else-if="upcomingFlight"
+        :flight="upcomingFlight.flight"
+        :schedule="upcomingFlight.schedule"
+        @view-all="openDayFlights"
       />
     </section>
+
+    <OrganismsDashboardDayFlightsModal
+      :open="dayFlightsOpen"
+      :days="dayFlightsWindow"
+      @close="dayFlightsOpen = false"
+    />
 
     <section class="home-page__section">
       <template v-if="loading">

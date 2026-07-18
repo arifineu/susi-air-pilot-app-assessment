@@ -10,6 +10,7 @@
  * Dropdowns close on outside click, Escape, or option-specific action.
  */
 import type { NotificationItem } from '~/types'
+import { formatDateLong } from '~/utils/format'
 
 interface Props {
   pilotName?: string
@@ -19,6 +20,8 @@ interface Props {
   totalFlightHours?: number
   /** Bell dropdown entries. Unread count is derived from `read: false`. */
   notifications?: NotificationItem[]
+  /** ISO date for the "today" line above the greeting. Hidden when omitted. */
+  today?: string
 }
 const props = withDefaults(defineProps<Props>(), {
   notifications: () => [],
@@ -46,6 +49,9 @@ const formattedHours = computed(() => {
     : rounded.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
   return `${str}h`
 })
+
+// "2026-05-31" → "Sunday, 31 May 2026"; empty when prop omitted.
+const formattedToday = computed(() => (props.today ? formatDateLong(props.today) : ''))
 
 const unreadCount = computed(() => props.notifications.filter((n) => !n.read).length)
 
@@ -197,6 +203,7 @@ onUnmounted(() => {
     </div>
 
     <div v-if="pilotName" class="dashboard-header__welcome">
+      <p v-if="formattedToday" class="dashboard-header__date">{{ formattedToday }}</p>
       <p class="dashboard-header__greeting">Welcome back,</p>
       <h1 class="dashboard-header__name">{{ pilotName }}</h1>
       <p v-if="formattedHours" class="dashboard-header__hours">
@@ -301,6 +308,15 @@ onUnmounted(() => {
     margin: 0;
     font-size: var(--fs-base-sm);
     color: var(--color-text-secondary);
+  }
+
+  &__date {
+    margin: 0 0 2px;
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: var(--fw-semibold);
   }
 
   &__name {

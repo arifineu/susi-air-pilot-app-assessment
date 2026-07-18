@@ -88,6 +88,16 @@ describe('DashboardHeader', () => {
       expect(wrapper.find('.dashboard-header__welcome').exists()).toBe(false)
     })
 
+    it('renders the today line when today prop is provided', () => {
+      const wrapper = mount(DashboardHeader, { props: { pilotName: 'John', today: '2026-05-31' } })
+      expect(wrapper.find('.dashboard-header__date').text()).toBe('Sunday, 31 May 2026')
+    })
+
+    it('hides the today line when today prop is omitted', () => {
+      const wrapper = mount(DashboardHeader, { props: { pilotName: 'John' } })
+      expect(wrapper.find('.dashboard-header__date').exists()).toBe(false)
+    })
+
     it('formats totalFlightHours with thousands separator + "h" suffix (1444.5 → "1,444.5h")', () => {
       const wrapper = mount(DashboardHeader, {
         props: { pilotName: 'John', totalFlightHours: 1444.5 },
