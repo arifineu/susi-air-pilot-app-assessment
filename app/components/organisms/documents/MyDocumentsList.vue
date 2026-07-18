@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
       <h2 class="my-documents-list__title">{{ title }}</h2>
     </header>
     <ul class="my-documents-list__items">
-      <DocumentListItem
+      <MoleculesCardDocumentListItem
         v-for="doc in documents"
         :key="doc.id"
         :label="doc.label"

@@ -29,7 +29,7 @@ const ICON_BY_VARIANT: Record<NonNullable<Props['variant']>, string> = {
 
 <template>
   <div class="alert" :class="`alert--${variant}`" role="alert">
-    <Icon :name="ICON_BY_VARIANT[variant]" :size="18" class="alert__icon" />
+    <AtomsIcon :name="ICON_BY_VARIANT[variant]" :size="18" class="alert__icon" />
     <div class="alert__body">
       <p v-if="title" class="alert__title">{{ title }}</p>
       <div class="alert__content"><slot /></div>
@@ -41,7 +41,7 @@ const ICON_BY_VARIANT: Record<NonNullable<Props['variant']>, string> = {
       aria-label="Dismiss"
       @click="emit('dismiss')"
     >
-      <Icon name="x" :size="16" />
+      <AtomsIcon name="x" :size="16" />
     </button>
   </div>
 </template>

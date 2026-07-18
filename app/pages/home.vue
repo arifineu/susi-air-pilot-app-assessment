@@ -80,7 +80,7 @@ const upcomingArrival = computed(() => {
 
 <template>
   <div class="home-page">
-    <DashboardHeader
+    <OrganismsDashboardHeader
       :pilot-name="pilotStore.name"
       :pilot-id="pilotStore.pilotId"
       :total-flight-hours="pilotStore.totalFlightHours"
@@ -91,10 +91,10 @@ const upcomingArrival = computed(() => {
     <section class="home-page__section">
       <template v-if="loading">
         <div class="home-page__skeleton-card">
-          <Skeleton variant="rect" :height="140" />
+          <AtomsFeedbackSkeleton variant="rect" :height="140" />
         </div>
       </template>
-      <UpcomingFlightCard
+      <OrganismsDashboardUpcomingFlightCard
         v-else-if="schedulesStore.nextUpcomingSchedule"
         :schedule="schedulesStore.nextUpcomingSchedule"
         :departure="upcomingDeparture"
@@ -104,29 +104,29 @@ const upcomingArrival = computed(() => {
 
     <section class="home-page__section">
       <template v-if="loading">
-        <h2 class="home-page__skeleton-title"><Skeleton variant="text" :width="120" :height="18" /></h2>
+        <h2 class="home-page__skeleton-title"><AtomsFeedbackSkeleton variant="text" :width="120" :height="18" /></h2>
         <div class="home-page__skeleton-news">
-          <Skeleton variant="rect" :height="220" radius="14" />
-          <Skeleton variant="rect" :height="220" radius="14" />
+          <AtomsFeedbackSkeleton variant="rect" :height="220" radius="14" />
+          <AtomsFeedbackSkeleton variant="rect" :height="220" radius="14" />
         </div>
       </template>
-      <LatestNewsCarousel v-else :items="newsStore.items" />
+      <OrganismsNewsLatestNewsCarousel v-else :items="newsStore.items" />
     </section>
 
     <section class="home-page__section">
       <template v-if="loading">
         <div class="home-page__skeleton-hours">
-          <Skeleton variant="rect" :height="40" radius="24" :width="220" />
-          <Skeleton variant="rect" :height="180" />
+          <AtomsFeedbackSkeleton variant="rect" :height="40" radius="24" :width="220" />
+          <AtomsFeedbackSkeleton variant="rect" :height="180" />
           <div class="home-page__skeleton-cards">
-            <Skeleton variant="rect" :height="140" />
-            <Skeleton variant="rect" :height="140" />
-            <Skeleton variant="rect" :height="140" />
-            <Skeleton variant="rect" :height="140" />
+            <AtomsFeedbackSkeleton variant="rect" :height="140" />
+            <AtomsFeedbackSkeleton variant="rect" :height="140" />
+            <AtomsFeedbackSkeleton variant="rect" :height="140" />
+            <AtomsFeedbackSkeleton variant="rect" :height="140" />
           </div>
         </div>
       </template>
-      <HoursToLimitSection
+      <OrganismsDashboardHoursToLimitSection
         v-else
         :flight-hours="flightHoursStore.flightHours"
         :limits="flightHoursStore.limits"
@@ -136,7 +136,7 @@ const upcomingArrival = computed(() => {
     </section>
 
     <section class="home-page__section">
-      <MyDocumentsList
+      <OrganismsDocumentsMyDocumentsList
         :documents="documentsStore.documents"
         :today="documentsStore.today"
         :warning-days="documentsStore.warningDays"

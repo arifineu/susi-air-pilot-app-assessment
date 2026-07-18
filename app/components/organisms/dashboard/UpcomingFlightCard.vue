@@ -29,10 +29,10 @@ const statusLabel = computed(() => (props.schedule.status === 2 ? 'Verified' : '
   <article class="upcoming-flight-card">
     <header class="upcoming-flight-card__header">
       <span class="upcoming-flight-card__label">Next duty</span>
-      <Badge :variant="statusVariant" :label="statusLabel" />
+      <AtomsDisplayBadge :variant="statusVariant" :label="statusLabel" />
     </header>
 
-    <FlightRoute
+    <MoleculesFlightRoute
       :departure="departure ?? { icao: schedule.base_name }"
       :arrival="arrival ?? { icao: schedule.base_name }"
       :flight-number="flightNumber"

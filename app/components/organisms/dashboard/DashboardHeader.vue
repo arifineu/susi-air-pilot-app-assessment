@@ -107,7 +107,7 @@ onUnmounted(() => {
   <header ref="headerRef" class="dashboard-header">
     <div class="dashboard-header__top">
       <div class="dashboard-header__brand">
-        <BrandLogo :height="26" />
+        <AtomsBrandLogo :height="26" />
       </div>
 
       <!-- Bell — always visible. Badge hides when no unread notifications. -->
@@ -120,7 +120,7 @@ onUnmounted(() => {
           aria-haspopup="menu"
           @click="toggleDropdown('notifications')"
         >
-          <Icon name="bell" :size="22" />
+          <AtomsIcon name="bell" :size="22" />
           <span v-if="unreadCount > 0" class="dashboard-header__notif-badge">{{ unreadCount }}</span>
         </button>
 
@@ -148,7 +148,7 @@ onUnmounted(() => {
                 role="menuitem"
               >
                 <span class="dashboard-header__notif-icon" :class="`dashboard-header__notif-icon--${item.variant ?? 'info'}`">
-                  <Icon :name="ICON_BY_VARIANT[item.variant ?? 'info']" :size="16" />
+                  <AtomsIcon :name="ICON_BY_VARIANT[item.variant ?? 'info']" :size="16" />
                 </span>
                 <div class="dashboard-header__notif-content">
                   <p class="dashboard-header__notif-item-title">{{ item.title }}</p>
@@ -172,7 +172,7 @@ onUnmounted(() => {
           aria-haspopup="menu"
           @click="toggleDropdown('profile')"
         >
-          <Avatar :src="pilotAvatar" :name="pilotName" :initials="initials" size="md" />
+          <AtomsBrandAvatar :src="pilotAvatar" :name="pilotName" :initials="initials" size="md" />
         </button>
 
         <Transition name="dropdown">
@@ -188,7 +188,7 @@ onUnmounted(() => {
             </div>
             <div class="dashboard-header__dropdown-divider" />
             <button type="button" class="dashboard-header__logout" role="menuitem" @click="onLogout">
-              <Icon name="log-out" :size="16" />
+              <AtomsIcon name="log-out" :size="16" />
               <span>Sign out</span>
             </button>
           </div>
@@ -200,7 +200,7 @@ onUnmounted(() => {
       <p class="dashboard-header__greeting">Welcome back,</p>
       <h1 class="dashboard-header__name">{{ pilotName }}</h1>
       <p v-if="formattedHours" class="dashboard-header__hours">
-        <Icon name="clock" :size="14" />
+        <AtomsIcon name="clock" :size="14" />
         <span>{{ formattedHours }} total flight time</span>
       </p>
     </div>

@@ -37,13 +37,13 @@ function closeModal() {
 
     <template v-if="loading">
       <div class="schedule-page__skeleton-grid">
-        <Skeleton variant="rect" :height="40" />
+        <AtomsFeedbackSkeleton variant="rect" :height="40" />
         <div class="schedule-page__skeleton-cells">
-          <Skeleton v-for="i in 42" :key="i" variant="rect" :height="56" radius="12" />
+          <AtomsFeedbackSkeleton v-for="i in 42" :key="i" variant="rect" :height="56" radius="12" />
         </div>
       </div>
     </template>
-    <ScheduleCalendarGrid
+    <OrganismsScheduleCalendarGrid
       v-else
       class="schedule-page__grid"
       :schedules="schedulesStore.schedules"
@@ -54,7 +54,7 @@ function closeModal() {
       @select-date="onSelectDate"
     />
 
-    <ScheduleLegend
+    <OrganismsScheduleLegend
       v-if="!loading"
       class="schedule-page__legend"
       :legend="schedulesStore.legend"

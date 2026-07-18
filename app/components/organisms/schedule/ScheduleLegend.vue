@@ -17,7 +17,7 @@ withDefaults(defineProps<Props>(), { columns: 2 })
 
 <template>
   <ul class="schedule-legend" :style="{ '--cols': columns }">
-    <LegendItem
+    <MoleculesScheduleLegendItem
       v-for="entry in legend"
       :key="entry.code"
       :color="entry.color"

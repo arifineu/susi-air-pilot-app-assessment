@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import { createNuxtCompatResolver } from './config/nuxt-component-resolver'
 
 export default defineConfig({
   plugins: [
@@ -15,9 +16,12 @@ export default defineConfig({
       dts: false,
       vueTemplate: true,
     }),
+    // Mirror Nuxt's component auto-import with pathPrefix:true, including the
+    // dedup rule (atoms/icon/Icon.vue → <AtomsIcon />). See
+    // config/nuxt-component-resolver.ts for the matching logic.
     Components({
-      dirs: ['app/components'],
-      directoryAsNamespace: false,
+      dirs: [],
+      resolvers: [createNuxtCompatResolver('app/components')],
       dts: false,
     }),
   ],

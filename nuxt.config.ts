@@ -5,11 +5,11 @@ export default defineNuxtConfig({
 
   modules: ['@pinia/nuxt', '@nuxt/eslint', '@nuxt/fonts'],
 
-  // Register all components under app/components/ by filename only, ignoring
-  // the atoms/molecules/organisms subdirectory prefix. So
-  //   app/components/organisms/SignInForm.vue → <SignInForm />
-  // instead of <OrganismsSignInForm />. Matches the convention the templates use.
-  components: [{ path: '~/components', pathPrefix: false }],
+  // Components are namespaced by their full directory path under app/components/.
+  // e.g. app/components/atoms/form/BaseInput.vue → <AtomsFormBaseInput />.
+  // Subdirectories group components by domain (form, feedback, dashboard, etc.)
+  // so flat atomic-layer folders stay scannable as the library grows.
+  components: [{ path: '~/components', pathPrefix: true }],
 
   css: ['~/assets/scss/tokens.scss'],
 

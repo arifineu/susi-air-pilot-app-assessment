@@ -40,7 +40,7 @@ function onContactCrd() {
 
 <template>
   <div class="sign-in-page">
-    <Alert
+    <AtomsFeedbackAlert
       v-if="showCrdAlert"
       variant="info"
       title="Need help?"
@@ -50,9 +50,9 @@ function onContactCrd() {
     >
       Contact the <strong>Crew Roster Desk (CRD)</strong> at
       <strong>+62 21 5590 0010</strong> — available 24/7.
-    </Alert>
+    </AtomsFeedbackAlert>
 
-    <SignInForm :loading="loading" :error="error" @submit="onSubmit" @contact-crd="onContactCrd" />
+    <OrganismsAuthSignInForm :loading="loading" :error="error" @submit="onSubmit" @contact-crd="onContactCrd" />
   </div>
 </template>
 
