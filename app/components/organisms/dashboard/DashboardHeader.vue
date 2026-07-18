@@ -10,6 +10,7 @@
  * Dropdowns close on outside click, Escape, or option-specific action.
  */
 import type { NotificationItem } from '~/types'
+import { formatDateLong } from '~/utils/format'
 
 interface Props {
   pilotName?: string
@@ -19,6 +20,8 @@ interface Props {
   totalFlightHours?: number
   /** Bell dropdown entries. Unread count is derived from `read: false`. */
   notifications?: NotificationItem[]
+  /** ISO date for the "today" line above the greeting. Hidden when omitted. */
+  today?: string
 }
 const props = withDefaults(defineProps<Props>(), {
   notifications: () => [],
@@ -46,6 +49,9 @@ const formattedHours = computed(() => {
     : rounded.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
   return `${str}h`
 })
+
+// "2026-05-31" → "Sunday, 31 May 2026"; empty when prop omitted.
+const formattedToday = computed(() => (props.today ? formatDateLong(props.today) : ''))
 
 const unreadCount = computed(() => props.notifications.filter((n) => !n.read).length)
 
@@ -107,7 +113,7 @@ onUnmounted(() => {
   <header ref="headerRef" class="dashboard-header">
     <div class="dashboard-header__top">
       <div class="dashboard-header__brand">
-        <BrandLogo :height="26" />
+        <AtomsBrandLogo :height="26" />
       </div>
 
       <!-- Bell — always visible. Badge hides when no unread notifications. -->
@@ -120,7 +126,7 @@ onUnmounted(() => {
           aria-haspopup="menu"
           @click="toggleDropdown('notifications')"
         >
-          <Icon name="bell" :size="22" />
+          <AtomsIcon name="bell" :size="22" />
           <span v-if="unreadCount > 0" class="dashboard-header__notif-badge">{{ unreadCount }}</span>
         </button>
 
@@ -148,7 +154,7 @@ onUnmounted(() => {
                 role="menuitem"
               >
                 <span class="dashboard-header__notif-icon" :class="`dashboard-header__notif-icon--${item.variant ?? 'info'}`">
-                  <Icon :name="ICON_BY_VARIANT[item.variant ?? 'info']" :size="16" />
+                  <AtomsIcon :name="ICON_BY_VARIANT[item.variant ?? 'info']" :size="16" />
                 </span>
                 <div class="dashboard-header__notif-content">
                   <p class="dashboard-header__notif-item-title">{{ item.title }}</p>
@@ -172,7 +178,7 @@ onUnmounted(() => {
           aria-haspopup="menu"
           @click="toggleDropdown('profile')"
         >
-          <Avatar :src="pilotAvatar" :name="pilotName" :initials="initials" size="md" />
+          <AtomsBrandAvatar :src="pilotAvatar" :name="pilotName" :initials="initials" size="md" />
         </button>
 
         <Transition name="dropdown">
@@ -188,7 +194,7 @@ onUnmounted(() => {
             </div>
             <div class="dashboard-header__dropdown-divider" />
             <button type="button" class="dashboard-header__logout" role="menuitem" @click="onLogout">
-              <Icon name="log-out" :size="16" />
+              <AtomsIcon name="log-out" :size="16" />
               <span>Sign out</span>
             </button>
           </div>
@@ -197,10 +203,11 @@ onUnmounted(() => {
     </div>
 
     <div v-if="pilotName" class="dashboard-header__welcome">
+      <p v-if="formattedToday" class="dashboard-header__date">{{ formattedToday }}</p>
       <p class="dashboard-header__greeting">Welcome back,</p>
       <h1 class="dashboard-header__name">{{ pilotName }}</h1>
       <p v-if="formattedHours" class="dashboard-header__hours">
-        <Icon name="clock" :size="14" />
+        <AtomsIcon name="clock" :size="14" />
         <span>{{ formattedHours }} total flight time</span>
       </p>
     </div>
@@ -301,6 +308,15 @@ onUnmounted(() => {
     margin: 0;
     font-size: var(--fs-base-sm);
     color: var(--color-text-secondary);
+  }
+
+  &__date {
+    margin: 0 0 2px;
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: var(--fw-semibold);
   }
 
   &__name {

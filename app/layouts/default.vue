@@ -32,7 +32,7 @@ function onNavigate(to: string) {
     <main class="default-layout__main">
       <slot />
     </main>
-    <BottomNavigation :items="items" :active-route="activeRoute" @navigate="onNavigate" />
+    <OrganismsNavigationBottomNavigation :items="items" :active-route="activeRoute" @navigate="onNavigate" />
   </div>
 </template>
 

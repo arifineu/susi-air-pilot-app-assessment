@@ -44,13 +44,13 @@ const statusLabel = computed(() => {
 <template>
   <li class="document-list-item">
     <div class="document-list-item__icon">
-      <Icon name="file-text" :size="18" />
+      <AtomsIcon name="file-text" :size="18" />
     </div>
     <div class="document-list-item__main">
       <span class="document-list-item__label">{{ label }}</span>
       <span class="document-list-item__date">{{ formattedDate }}</span>
     </div>
-    <Badge :variant="expiry.status" :label="statusLabel" />
+    <AtomsDisplayBadge :variant="expiry.status" :label="statusLabel" />
   </li>
 </template>
 

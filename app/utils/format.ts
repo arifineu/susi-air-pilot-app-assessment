@@ -33,3 +33,55 @@ export function formatHoursOrMinutes(value: number, unit = 'h'): string {
   }
   return formatHours(value, unit)
 }
+
+/**
+ * Format an ISO date as a long human-readable string, e.g.
+ *   "2026-05-31" → "Sunday, 31 May 2026"
+ *
+ * Uses Intl.DateTimeFormat('en-GB', ...) — the rest of the app already
+ * standardizes on en-GB for day-before-month ordering (see DocumentListItem,
+ * ScheduleCalendarGrid, FlightHoursTrendChart).
+ */
+export function formatDateLong(iso: string): string {
+  const d = new Date(`${iso}T00:00:00Z`)
+  if (Number.isNaN(d.getTime())) return iso
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(d)
+}
+
+/**
+ * Format a duration in minutes as a compact label:
+ *   0   → "0m"
+ *   45  → "45m"
+ *   75  → "1h 15m"
+ *   120 → "2h"
+ */
+export function formatDuration(minutes: number): string {
+  if (minutes <= 0) return '0m'
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}m`
+}
+
+/**
+ * Add N days to an ISO yyyy-mm-dd date, returning a new ISO yyyy-mm-dd.
+ *   addDays('2026-05-31', 3) → '2026-06-03'
+ *   addDays('2026-01-31', 1) → '2026-02-01'   (month boundary)
+ *
+ * Uses UTC explicitly. Constructing `new Date('2026-05-31')` parses as local
+ * midnight, and `setDate` can cross DST boundaries or shift a day in some
+ * timezones — UTC keeps the yyyy-mm-dd math stable everywhere.
+ */
+export function addDays(iso: string, days: number): string {
+  const d = new Date(`${iso}T00:00:00Z`)
+  if (Number.isNaN(d.getTime())) return iso
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}

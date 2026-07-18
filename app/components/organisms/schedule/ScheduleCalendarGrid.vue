@@ -71,7 +71,7 @@ function cellDutyType(cell: { schedule?: Schedule }): string | undefined {
         aria-label="Previous month"
         @click="shiftMonth(-1)"
       >
-        <Icon name="chevron-left" :size="20" />
+        <AtomsIcon name="chevron-left" :size="20" />
       </button>
       <h2 class="schedule-calendar-grid__month">{{ monthLabel }}</h2>
       <button
@@ -80,7 +80,7 @@ function cellDutyType(cell: { schedule?: Schedule }): string | undefined {
         aria-label="Next month"
         @click="shiftMonth(1)"
       >
-        <Icon name="chevron-right" :size="20" />
+        <AtomsIcon name="chevron-right" :size="20" />
       </button>
     </header>
 
@@ -91,7 +91,7 @@ function cellDutyType(cell: { schedule?: Schedule }): string | undefined {
     <Transition :name="transitionName" mode="out-in">
       <div :key="yearMonth" class="schedule-calendar-grid__cells">
         <template v-for="(row, rIdx) in grid" :key="rIdx">
-          <CalendarDay
+          <MoleculesScheduleCalendarDay
             v-for="(cell, cIdx) in row"
             :key="cell.date"
             :date="cell.date"

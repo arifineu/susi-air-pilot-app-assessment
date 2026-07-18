@@ -23,7 +23,7 @@ defineEmits<{ (e: 'click'): void }>()
     @click="$emit('click')"
   >
     <span class="bottom-nav-item__icon-wrap">
-      <Icon :name="icon" :size="22" />
+      <AtomsIcon :name="icon" :size="22" />
       <span v-if="badge !== undefined" class="bottom-nav-item__badge">{{ badge }}</span>
     </span>
     <span class="bottom-nav-item__label">{{ label }}</span>

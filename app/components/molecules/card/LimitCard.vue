@@ -40,7 +40,7 @@ const limitText = computed(() => formatHours(props.limit, props.unit))
 
 <template>
   <div class="limit-card" :class="`limit-card--${state}`">
-    <ProgressRing
+    <AtomsFeedbackProgressRing
       :value="value"
       :max="limit"
       :unit="unit"

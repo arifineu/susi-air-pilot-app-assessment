@@ -4,6 +4,7 @@ import vuePlugin from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import type { StorybookConfig } from '@storybook/vue3-vite'
+import { createNuxtCompatResolver } from '../config/nuxt-component-resolver'
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -45,8 +46,8 @@ const config: StorybookConfig = {
     )
     config.plugins.push(
       Components({
-        dirs: [path.resolve(projectRoot, 'app/components')],
-        directoryAsNamespace: false,
+        dirs: [],
+        resolvers: [createNuxtCompatResolver(path.resolve(projectRoot, 'app/components'))],
         dts: false,
       }) as never,
     )

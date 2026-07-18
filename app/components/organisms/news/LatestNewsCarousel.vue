@@ -21,7 +21,7 @@ defineEmits<{ (e: 'select', id: string): void }>()
       <h2 class="latest-news-carousel__title">{{ title }}</h2>
     </header>
     <div class="latest-news-carousel__scroll" role="region" :aria-label="title" tabindex="0">
-      <NewsCard
+      <MoleculesCardNewsCard
         v-for="item in items"
         :id="item.id"
         :key="item.id"

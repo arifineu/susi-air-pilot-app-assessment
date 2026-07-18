@@ -45,7 +45,7 @@ const isComplete = computed(() => props.countSchedules > 0 && props.countLogbook
     <span class="calendar-day__number">{{ dayNumber }}</span>
     <span v-if="hasSchedule && baseName" class="calendar-day__base">{{ baseName }}</span>
     <span v-if="isComplete" class="calendar-day__tick" aria-label="All flights logged">
-      <Icon name="check" :size="14" :stroke-width="2.5" />
+      <AtomsIcon name="check" :size="14" :stroke-width="2.5" />
     </span>
     <span v-else-if="hasSchedule && countSchedules > 0" class="calendar-day__count">
       {{ countSchedules }}

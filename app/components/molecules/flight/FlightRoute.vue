@@ -26,7 +26,7 @@ defineProps<Props>()
       </div>
       <span class="flight-route__connector" aria-hidden="true">
         <span class="flight-route__line" />
-        <Icon name="plane" :size="16" class="flight-route__plane" />
+        <AtomsIcon name="plane" :size="16" class="flight-route__plane" />
         <span class="flight-route__line" />
       </span>
       <div class="flight-route__airport flight-route__airport--arr">

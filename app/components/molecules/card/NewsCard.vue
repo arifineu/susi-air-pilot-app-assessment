@@ -25,7 +25,7 @@ defineEmits<{ (e: 'click'): void }>()
       </slot>
     </div>
     <div class="news-card__body">
-      <Chip v-if="category" class="news-card__category">{{ category }}</Chip>
+      <AtomsDisplayChip v-if="category" class="news-card__category">{{ category }}</AtomsDisplayChip>
       <h3 class="news-card__title">{{ title }}</h3>
       <p v-if="excerpt" class="news-card__excerpt">{{ excerpt }}</p>
       <div v-if="date || readTime" class="news-card__meta">

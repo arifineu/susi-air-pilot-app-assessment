@@ -34,7 +34,7 @@ function onSubmit() {
       <p class="sign-in-form__subtitle">Sign in to your pilot dashboard</p>
     </header>
 
-    <FormField
+    <MoleculesFormField
       v-model="pilotId"
       label="Pilot ID"
       name="pilotId"
@@ -42,7 +42,7 @@ function onSubmit() {
       autocomplete="username"
       required
     />
-    <FormField
+    <MoleculesFormField
       v-model="password"
       label="Password"
       type="password"
@@ -54,9 +54,9 @@ function onSubmit() {
 
     <p v-if="error" class="sign-in-form__error" role="alert">{{ error }}</p>
 
-    <BaseButton type="submit" variant="primary" size="lg" full-width :loading="loading">
+    <AtomsFormBaseButton type="submit" variant="primary" size="lg" full-width :loading="loading">
       Sign In
-    </BaseButton>
+    </AtomsFormBaseButton>
 
     <!-- CRD helper link — REQUIRED per brief §5. NOT decorative. -->
     <p class="sign-in-form__help">

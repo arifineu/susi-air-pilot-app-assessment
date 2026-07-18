@@ -26,7 +26,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="form-field">
-    <BaseInput
+    <AtomsFormBaseInput
       :model-value="props.modelValue"
       :label="label"
       :type="type"
@@ -39,7 +39,7 @@ const emit = defineEmits<{
       :name="name"
       @update:model-value="(v: string) => emit('update:modelValue', v)"
     />
-    <BaseButton
+    <AtomsFormBaseButton
       v-if="actionLabel"
       variant="ghost"
       size="sm"
@@ -47,7 +47,7 @@ const emit = defineEmits<{
       @click="emit('action')"
     >
       {{ actionLabel }}
-    </BaseButton>
+    </AtomsFormBaseButton>
     <div v-if="$slots.hint" class="form-field__hint-slot"><slot name="hint" /></div>
   </div>
 </template>

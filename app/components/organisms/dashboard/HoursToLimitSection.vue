@@ -56,7 +56,7 @@ function onRangeChange(value: string) {
   <section class="hours-to-limit-section">
     <header class="hours-to-limit-section__header">
       <h2 class="hours-to-limit-section__title">Hours to Limit</h2>
-      <RangeToggleGroup :model-value="range" @update:model-value="onRangeChange" />
+      <MoleculesFormRangeToggleGroup :model-value="range" @update:model-value="onRangeChange" />
     </header>
 
     <div class="hours-to-limit-section__chart">
@@ -69,7 +69,7 @@ function onRangeChange(value: string) {
     </div>
 
     <div class="hours-to-limit-section__cards">
-      <LimitCard
+      <MoleculesCardLimitCard
         v-for="card in cards"
         :key="card.key"
         :label="card.label"

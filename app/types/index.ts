@@ -29,6 +29,31 @@ export interface Schedule {
   duty_type: string // maps to Legend.code
   count_schedules: number
   count_logbooks: number
+  /** Per-flight legs for DTY days. Absent on non-flying duty types.
+   *  Optional because most mock entries stay at duty-day granularity — only
+   *  the days the dashboard surfaces are enriched. */
+  flights?: Flight[]
+}
+
+/** Airport reference (departure / arrival endpoint of a flight leg). */
+export interface Airport {
+  icao: string
+  city?: string
+}
+
+/** A single flight leg within a Schedule. */
+export interface Flight {
+  id: string
+  flight_number: string // e.g. "SSI-2204"
+  /** Free-text aircraft label, constrained at the data layer to Susi Air's
+   *  fleet — "Cessna Grand Carawan" or "LET 410". */
+  aircraft: string
+  aircraft_registration: string // e.g. "PK-WGO"
+  departure: Airport & { time: string } // "HH:MM" 24h local
+  arrival: Airport & { time: string }
+  duration_minutes: number
+  /** Mirrors Schedule.status: 1 = upcoming, 2 = completed. */
+  status: number
 }
 
 /** Legend entry (from mock-schedules.json legend[]). */
