@@ -2,7 +2,7 @@
 
 A mobile-first Nuxt 4 web app for Susi Air pilots. Three primary surfaces — Sign In, Home (dashboard), Schedule (calendar) — wired against three JSON mocks. No backend; all data is read from `app/assets/data/`. Built as a technical test for Susi Air's pilot companion app brief.
 
-**Status:** production-ready. 314 unit/component specs + 128 Storybook smoke tests passing, ~98% statement coverage, installable PWA, deployable to Vercel out of the box.
+**Status:** production-ready. 366 unit/component specs + 132 Storybook smoke tests passing, ~98% statement coverage, installable PWA, deployable to Vercel out of the box.
 
 ---
 
@@ -74,17 +74,36 @@ app/
 │   ├── data/           # 4 JSON mocks (documents, flight-hours, schedules, news)
 │   └── scss/tokens.scss # SCSS vars + CSS custom properties + resets
 ├── components/
-│   ├── atoms/          # 11 — Alert, Button, Input, Avatar, Badge, Icon, BrandLogo, ProgressRing, ProgressBar, Chip, Skeleton
-│   ├── molecules/      # 9  — FormField, FlightRoute, NewsCard, LimitCard, DocumentListItem, CalendarDay, LegendItem, RangeToggleGroup, BottomNavItem
-│   └── organisms/      # 10 — DashboardHeader, BottomNavigation, ScheduleLegend, SignInForm, UpcomingFlightCard, MyDocumentsList, LatestNewsCarousel, FlightHoursTrendChart, HoursToLimitSection, ScheduleCalendarGrid
+│   ├── atoms/          # 11, grouped into 5 domain subdirectories
+│   │   ├── brand/      # Avatar, BrandLogo
+│   │   ├── display/    # Badge, Chip
+│   │   ├── feedback/   # Alert, ProgressBar, ProgressRing, Skeleton
+│   │   ├── form/       # BaseButton, BaseInput
+│   │   └── icon/       # Icon
+│   ├── molecules/      # 9, grouped into 5 domain subdirectories
+│   │   ├── card/       # DocumentListItem, LimitCard, NewsCard
+│   │   ├── flight/     # FlightRoute
+│   │   ├── form/       # FormField, RangeToggleGroup
+│   │   ├── navigation/ # BottomNavItem
+│   │   └── schedule/   # CalendarDay, LegendItem
+│   └── organisms/      # 11, grouped into 6 domain subdirectories
+│       ├── auth/         # SignInForm
+│       ├── dashboard/    # DashboardHeader, DayFlightsModal, FlightHoursTrendChart, HoursToLimitSection, UpcomingFlightCard
+│       ├── documents/    # MyDocumentsList
+│       ├── navigation/   # BottomNavigation
+│       ├── news/         # LatestNewsCarousel
+│       └── schedule/     # ScheduleCalendarGrid, ScheduleLegend
 ├── composables/        # 5 — useDocumentExpiry, useRollingSum, useFlightLimits, useDutyCalendar, useLoadingDelay
 ├── layouts/            # 2 — default.vue (with BottomNavigation), auth.vue (bare)
 ├── pages/              # 5 — index (Sign In), home, schedule, logbook (stub), more (stub)
 ├── plugins/
 │   └── pwa.client.ts   # SW registration (skips dev)
 ├── stores/             # 5 — pilot, documents, schedules, flightHours, news
-├── types/index.ts      # Shared types for all 4 JSON shapes + UI helpers
+├── types/index.ts      # Shared types for all 4 JSON shapes + Flight + UI helpers
+├── utils/format.ts     # Hours / duration / date formatters (formatHours, formatDuration, formatDateLong, addDays, …)
 └── app.vue             # NuxtLayout + NuxtPage + page/layout transitions
+config/
+└── nuxt-component-resolver.ts  # Shared unplugin-vue-components resolver mirroring Nuxt's pathPrefix + dedup
 public/
 ├── manifest.webmanifest
 ├── sw.js               # ~80 lines: cache-first shell + network-first nav
@@ -107,11 +126,13 @@ eslint.config.mjs       # Flat config via @nuxt/eslint
 
 ### Atomic design
 
-Three layers, each with a clear contract:
+Three layers, each with a clear contract — and each grouped into domain-based subdirectories once the flat folder crossed ~10 entries:
 
-- **Atoms** (11) — presentational primitives. Pure props in, emits out. Never import stores, never call composables. (e.g. `BaseButton`, `Avatar`, `Icon`, `Alert`).
-- **Molecules** (9) — small compositions of atoms + at most one pure composable (e.g. `DocumentListItem` calls `computeDocumentExpiry`). Still no store access.
-- **Organisms** (10) — section-level compositions. Receive data via props (semi-smart pattern — see below), consume pure composables for derived state. Don't call Pinia stores directly.
+- **Atoms** (11) — presentational primitives. Pure props in, emits out. Never import stores, never call composables. Grouped into `brand/`, `display/`, `feedback/`, `form/`, `icon/`.
+- **Molecules** (9) — small compositions of atoms + at most one pure composable (e.g. `DocumentListItem` calls `computeDocumentExpiry`). Still no store access. Grouped into `card/`, `flight/`, `form/`, `navigation/`, `schedule/`.
+- **Organisms** (11) — section-level compositions. Receive data via props (semi-smart pattern — see below), consume pure composables for derived state. Don't call Pinia stores directly. Grouped into `auth/`, `dashboard/`, `documents/`, `navigation/`, `news/`, `schedule/`.
+
+Subdirectories are domain-based (not type-based) so related components cluster together: everything dashboard-shaped lives under `organisms/dashboard/`, everything form-shaped under `atoms/form/`. The flat per-layer folder hit 30 components and got hard to scan; subdirectories mirror the MUI / shadcn convention.
 
 **Pages** are the composition root — they pull from Pinia stores and pass data as props to organisms. This keeps organisms:
 1. Storybook-friendly (pass props directly, no store mocking)
@@ -121,6 +142,15 @@ Three layers, each with a clear contract:
 ### Why atomic design?
 
 Separation of concerns. The brief is a recruiter test; the layered structure demonstrates "I can compose a UI from primitive → composite → section-level without coupling." Atoms being pure makes them trivially testable; organisms being semi-smart (props + composables) keeps Storybook stories isolated.
+
+### Why domain subdirectories within each atomic layer?
+
+Three options seriously considered:
+- **Flat per-layer folders** — rejected past ~10 components. Scrolling through 30 `.vue` files in one folder to find `BaseInput` is a tax that grows with the library.
+- **Subdirectories by component type** (e.g. `atoms/buttons/`, `atoms/inputs/`) — too granular; single-item directories proliferate.
+- **Subdirectories by domain** (adopted) — `form/`, `feedback/`, `dashboard/`, `schedule/`. Component type is already implied by the atomic layer; domain is the dimension that actually helps scanning.
+
+Trade-off: longer auto-import names (`<AtomsFormBaseInput />` vs `<BaseInput />`). Worth it for the structural clarity, and the prefix doubles as documentation — a reader sees `OrganismsDashboardHeader` and immediately knows the layer + domain.
 
 ## Key decisions
 
@@ -160,9 +190,31 @@ The brief suggests `SignInTemplate`, `HomeTemplate`, `ScheduleTemplate`. Pages A
 
 Nuxt 4 auto-imports them. To keep Vitest and Storybook (which don't run inside Nuxt) in sync, we mirror the auto-import behavior via `unplugin-auto-import` + `unplugin-vue-components` in both `vitest.config.ts` and `.storybook/main.ts`. The `.ts` files (composables, stores, specs) keep explicit imports for portability — those are libraries usable outside the Nuxt context.
 
-### Why `nuxt.config.ts` has `components: [{ path: '~/components', pathPrefix: false }]`?
+### Why `pathPrefix: true` + a custom resolver for vitest/storybook?
 
-By default, Nuxt registers components from subdirectories with a path prefix (e.g. `<OrganismsSignInForm>` instead of `<SignInForm>`). We want bare filenames regardless of folder, since that's what our templates use. This setting deduplicates when names are unique.
+With domain subdirectories under each atomic layer (see above), we want component names to reflect the hierarchy — `<AtomsFormBaseInput />` instead of `<BaseInput />`. Nuxt enables this via:
+
+```ts
+// nuxt.config.ts
+components: [{ path: '~/components', pathPrefix: true }]
+```
+
+**Gotcha that bit us:** Nuxt silently **deduplicates** when the filename starts with the parent directory name. So:
+- `atoms/icon/Icon.vue` → `<AtomsIcon>` (not `<AtomsIconIcon>`)
+- `atoms/brand/BrandLogo.vue` → `<AtomsBrandLogo>` (not `<AtomsBrandBrandLogo>`)
+- `organisms/dashboard/DashboardHeader.vue` → `<OrganismsDashboardHeader>`
+
+The dedup is a feature — the naive concatenated name is awkward and the dedup'd version reads naturally. But it's undocumented and you only find the actual names by reading `.nuxt/components.d.ts` after a build.
+
+**Why this matters for tests:** vitest + storybook don't run inside Nuxt, so they can't use Nuxt's auto-import. The project mirrors it via `unplugin-vue-components` in `vitest.config.ts` + `.storybook/main.ts`. The plugin doesn't apply the same dedup rule, so names diverge silently between environments — tests pass while the app breaks (or vice versa).
+
+**Fix:** `config/nuxt-component-resolver.ts` walks `app/components/` at config load time, builds a name → file-path map using Nuxt's exact dedup rule, and exposes it as a custom resolver. Both vitest and storybook use it instead of the plugin's built-in directory-as-namespace mode. Single source of truth for naming across dev, test, and stories.
+
+If a new naming mismatch appears, debug with:
+
+```bash
+npx tsx -e "import {createNuxtCompatResolver} from './config/nuxt-component-resolver'; console.log(createNuxtCompatResolver('app/components')('AtomsIcon'))"
+```
 
 ## Testing strategy
 
@@ -213,7 +265,7 @@ The brief's "Things to Double-Check Before Calling It Done" — every bullet ans
 - [x] **Rolling-sum chart X-axis is always ±7 days from "today" (2026-05-31).** Verified in `app/composables/useRollingSum.spec.ts` → "display window is INDEPENDENT of windowDays".
 - [x] **Document badges match the 5 worked examples in §3.1 exactly.** Verified in `app/composables/useDocumentExpiry.spec.ts` → all 5 cases (`doc_recurrent → safe`, `doc_ppc → safe`, `doc_license → expired`, `doc_medical → soon`, `doc_security → expired`).
 - [x] **Calendar tick-vs-number badge logic.** Tick only when `count_logbooks === count_schedules`. Verified in `app/components/molecules/CalendarDay.spec.ts` (4 cases).
-- [x] **Every atom/molecule/organism has a Storybook story AND a spec file.** 30 stories + 41 spec files; 100% component coverage.
+- [x] **Every atom/molecule/organism has a Storybook story AND a spec file.** 31 story files (132 exported stories) + 43 spec files (366 tests); 100% component coverage.
 - [x] **No component reaches into `assets/data/*.json` directly except the Pinia stores.** Atoms/molecules/organisms receive data as props. Pages pull from stores and pass down. The only direct JSON import outside `stores/` is in `*.stories.ts` files (which is appropriate — stories are test fixtures, not production code).
 - [x] **Mobile-first verified at 390px.** `app/components/organisms/HoursToLimitSection.stories.ts` → `Mobile390px` story locks the viewport to 390×844. `app/assets/scss/tokens.scss` sets `overflow-x: hidden` on `html, body` as a safety net.
 - [x] **Numeric/data values are bold-weighted.** `app/assets/scss/tokens.scss` defines `--fw-bold: 700` and `--fw-extrabold: 800`; used throughout for hours, times, counts. See `.limit-card__remaining-value`, `.flight-route__icao`, `.calendar-day__base`, etc.
@@ -233,7 +285,7 @@ The brief's "Things to Double-Check Before Calling It Done" — every bullet ans
 - **Dark mode.** Tokens are already CSS custom properties, so a `[data-theme="dark"]` override would be ~30 lines of CSS.
 - **Real Susi Air logo variants.** We use the wordmark (240×60 PNG) as the only brand asset. A proper icon set (square app icon, monochrome version, etc.) would come from Susi Air's brand kit.
 - **Animated limit-card transitions.** When the chart toggle changes, the 4 LimitCards currently snap to new values. A tween would feel smoother.
-- **Stub `tap-a-date` modal.** The schedule page shows a placeholder modal ("Detail page coming soon") per brief. A real detail page would show that day's full duty log.
+- **Stub `tap-a-date` modal.** The schedule page shows a placeholder modal ("Detail page coming soon") per brief. A real detail page would show that day's full duty log. The dashboard's new `DayFlightsModal` is the closest analog — a real component listing every leg for a day with prev/next + swipe nav across a 4-day window — but it's dashboard-only.
 - **Analytics.** No analytics on which toggle / page / cell is most used. Real version would have PostHog or Vercel Analytics.
 
 ---
