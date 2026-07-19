@@ -5,6 +5,7 @@
  * inside the brief's "1.5–2px stroke, line-style only" requirement.
  */
 import * as icons from '@lucide/vue'
+import type { Component } from 'vue'
 
 interface Props {
   name: string
@@ -21,7 +22,10 @@ const props = withDefaults(defineProps<Props>(), {
 const resolved = computed(() => {
   // lucide exports are PascalCase, e.g. `Plane`, `AlertTriangle`. Allow
   // kebab (`alert-triangle`), snake, and PascalCase from the caller.
-  const table = icons as Record<string, any>
+  // lucide exports are Vue functional components keyed by PascalCase name
+  // (e.g. `Plane`, `AlertTriangle`). Indexing the namespace with a string
+  // needs a record type — `Component` keeps it stricter than `any`.
+  const table = icons as unknown as Record<string, Component>
   const pascal = props.name
     .split(/[-_]/)
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))

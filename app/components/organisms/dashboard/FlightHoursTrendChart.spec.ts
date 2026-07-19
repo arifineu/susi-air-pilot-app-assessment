@@ -181,7 +181,12 @@ describe('FlightHoursTrendChart', () => {
       return {
         point: ds.pointBackgroundColor!,
         pointHover: ds.pointHoverBackgroundColor!,
-        segment: ds.segment?.borderColor!,
+        // Assert segment + borderColor directly (no optional chaining) —
+        // `?.borderColor!` would mix optional chain with non-null assertion,
+        // which @typescript-eslint/no-non-null-asserted-optional-chain
+        // correctly rejects. Both layers are set in chartData, so the
+        // assertion is honest.
+        segment: ds.segment!.borderColor!,
       }
     }
 
