@@ -18,6 +18,26 @@ describe('NewsCard', () => {
     expect(wrapper.find('.news-card__category').exists()).toBe(false)
   })
 
+  describe('category → color mapping', () => {
+    it.each([
+      ['Safety', 'danger'],
+      ['safety', 'danger'], // case-insensitive
+      ['Notice', 'danger'],
+      ['Operations', 'accent'],
+      ['Fleet', 'success'],
+    ])('renders category %s with the %s chip variant', (category, variant) => {
+      const wrapper = mount(NewsCard, { props: { title: 't', category } })
+      const chip = wrapper.find('.news-card__category')
+      expect(chip.classes()).toContain(`chip--${variant}`)
+    })
+
+    it('falls back to the default variant for unknown categories', () => {
+      const wrapper = mount(NewsCard, { props: { title: 't', category: 'Mystery' } })
+      const chip = wrapper.find('.news-card__category')
+      expect(chip.classes()).toContain('chip--default')
+    })
+  })
+
   it('renders the excerpt', () => {
     const wrapper = mount(NewsCard, { props: { title: 't', excerpt: 'Body text' } })
     expect(wrapper.find('.news-card__excerpt').text()).toBe('Body text')

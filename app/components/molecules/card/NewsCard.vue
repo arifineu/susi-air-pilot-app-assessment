@@ -5,6 +5,26 @@
  * title, and optional meta (date / read time).
  */
 
+type ChipVariant = 'default' | 'accent' | 'success' | 'warning' | 'danger'
+
+/**
+ * Category → color mapping. Safety + Notice are red (urgent, attention-
+ * required); Operations is accent cyan (informational); Fleet is success
+ * green (positive). Unknown categories fall back to default neutral.
+ * Kept as a Map outside the component so it's easy to audit / extend.
+ */
+const CATEGORY_VARIANT: Record<string, ChipVariant> = {
+  safety: 'danger',
+  notice: 'danger',
+  operations: 'accent',
+  fleet: 'success',
+}
+
+function variantForCategory(category?: string): ChipVariant {
+  if (!category) return 'default'
+  return CATEGORY_VARIANT[category.toLowerCase()] ?? 'default'
+}
+
 interface Props {
   category?: string
   title: string
@@ -13,8 +33,10 @@ interface Props {
   date?: string
   readTime?: string
 }
-defineProps<Props>()
+const props = defineProps<Props>()
 defineEmits<{ (e: 'click'): void }>()
+
+const chipVariant = computed<ChipVariant>(() => variantForCategory(props.category))
 </script>
 
 <template>
@@ -25,7 +47,7 @@ defineEmits<{ (e: 'click'): void }>()
       </slot>
     </div>
     <div class="news-card__body">
-      <AtomsDisplayChip v-if="category" class="news-card__category">{{ category }}</AtomsDisplayChip>
+      <AtomsDisplayChip v-if="category" class="news-card__category" :variant="chipVariant">{{ category }}</AtomsDisplayChip>
       <h3 class="news-card__title">{{ title }}</h3>
       <p v-if="excerpt" class="news-card__excerpt">{{ excerpt }}</p>
       <div v-if="date || readTime" class="news-card__meta">
@@ -82,8 +104,6 @@ defineEmits<{ (e: 'click'): void }>()
     width: fit-content;
     font-size: var(--fs-xs);
     font-weight: var(--fw-semibold);
-    color: var(--color-text-secondary);
-    background: var(--color-surface-alt);
     padding: 2px var(--space-2);
     border-radius: var(--radius-full);
   }

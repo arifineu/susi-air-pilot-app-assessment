@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import Chip from './Chip.vue'
 
+type NonVariant = 'default' | 'accent' | 'success' | 'warning' | 'danger'
+
 describe('Chip', () => {
   it('renders slot content', () => {
     const wrapper = mount(Chip, { slots: { default: 'Cessna' } })
@@ -24,5 +26,20 @@ describe('Chip', () => {
   it('applies selected modifier', () => {
     const wrapper = mount(Chip, { props: { selected: true }, slots: { default: 'On Duty' } })
     expect(wrapper.classes()).toContain('chip--selected')
+  })
+
+  it('defaults to the neutral `chip--default` variant', () => {
+    const wrapper = mount(Chip, { slots: { default: 'x' } })
+    expect(wrapper.classes()).toContain('chip--default')
+  })
+
+  it.each<[NonVariant]>([
+    ['accent'],
+    ['success'],
+    ['warning'],
+    ['danger'],
+  ])('applies the `%s` variant class', (variant) => {
+    const wrapper = mount(Chip, { props: { variant }, slots: { default: 'x' } })
+    expect(wrapper.classes()).toContain(`chip--${variant}`)
   })
 })
