@@ -203,7 +203,7 @@ describe('DayFlightsModal', () => {
 
     it('ignores a swipe below the threshold distance', async () => {
       const wrapper = mountModal()
-      swipe(wrapper, 200, 100, 170, 100) // dx = -30, below SWIPE_THRESHOLD of 50
+      swipe(wrapper, 200, 100, 190, 100) // dx = -10, below SWIPE_THRESHOLD of 20
       await wrapper.vm.$nextTick()
       expect(wrapper.find('.day-flights-modal__title').text()).toBe('Sunday, 31 May 2026')
     })

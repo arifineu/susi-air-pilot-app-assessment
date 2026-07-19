@@ -61,9 +61,11 @@ const statusLabel = computed(() => {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-2);
   border-radius: var(--radius-md);
+  background-color: var(--color-surface);
 
   &:hover {
     background: var(--color-surface-alt);
+    cursor: pointer;
   }
 
   &__icon {
