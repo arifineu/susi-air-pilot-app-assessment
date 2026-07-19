@@ -17,7 +17,6 @@ export default defineNuxtPlugin(() => {
         setInterval(() => reg.update(), 60 * 60 * 1000)
       })
       .catch((err) => {
-        // eslint-disable-next-line no-console
         console.warn('[pwa] SW registration failed:', err)
       })
   })

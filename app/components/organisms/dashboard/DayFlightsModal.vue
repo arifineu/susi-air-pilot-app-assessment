@@ -68,7 +68,7 @@ function next() {
 // and trigger prev/next if the gesture is horizontal-dominant and past a
 // minimum travel. The body must remain vertically scrollable, so a mostly-
 // vertical swipe is ignored entirely.
-const SWIPE_THRESHOLD = 50 // px horizontal travel before we treat it as a nav gesture
+const SWIPE_THRESHOLD = 20 // px horizontal travel before we treat it as a nav gesture
 const touchStartX = ref<number | null>(null)
 const touchStartY = ref<number | null>(null)
 
@@ -149,7 +149,7 @@ function statusVariant(status: number): 'neutral' | 'safe' {
             aria-label="Close"
             @click="emit('close')"
           >
-            ×
+            <AtomsIcon name="x" :size="20" />
           </button>
         </header>
 

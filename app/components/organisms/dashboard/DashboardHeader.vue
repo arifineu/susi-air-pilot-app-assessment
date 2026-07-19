@@ -225,6 +225,8 @@ onUnmounted(() => {
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom-left-radius: var(--radius-card);
+  border-bottom-right-radius: var(--radius-card);
 
   &__top {
     display: flex;

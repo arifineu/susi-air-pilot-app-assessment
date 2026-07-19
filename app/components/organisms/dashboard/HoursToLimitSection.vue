@@ -64,6 +64,7 @@ function onRangeChange(value: string) {
         :series="series"
         :limit="activeBounds.limit"
         :max="activeBounds.max"
+        :today="today"
         unit="h"
       />
     </div>

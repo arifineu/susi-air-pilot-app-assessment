@@ -2,17 +2,22 @@
 /**
  * Chip
  * Small dismissable tag. Slot for content; emits `dismiss`.
+ *
+ * Variants map to the palette tokens — same tinted-bg + stronger-text pattern
+ * Badge uses. `default` keeps the original neutral look (white bg, primary
+ * text) for non-categorized chips like form filters.
  */
 interface Props {
   dismissable?: boolean
   selected?: boolean
+  variant?: 'default' | 'accent' | 'success' | 'warning' | 'danger'
 }
-defineProps<Props>()
+withDefaults(defineProps<Props>(), { variant: 'default' })
 const emit = defineEmits<{ (e: 'dismiss'): void }>()
 </script>
 
 <template>
-  <span class="chip" :class="{ 'chip--selected': selected }">
+  <span class="chip" :class="[`chip--${variant}`, { 'chip--selected': selected }]">
     <span class="chip__label"><slot /></span>
     <button
       v-if="dismissable"
@@ -44,6 +49,33 @@ const emit = defineEmits<{ (e: 'dismiss'): void }>()
     background: rgba(230, 55, 87, 0.08);
     border-color: var(--color-red);
     color: var(--color-red);
+  }
+
+  // Category variants — soft tinted bg + matching border/text. The `selected`
+  // modifier takes precedence over `default` but is overridden by other
+  // variants when both are set (category wins).
+  &--accent {
+    background: rgba(34, 197, 232, 0.10);
+    border-color: rgba(34, 197, 232, 0.35);
+    color: #0e7490;
+  }
+
+  &--success {
+    background: rgba(31, 191, 143, 0.12);
+    border-color: rgba(31, 191, 143, 0.35);
+    color: #0e9472;
+  }
+
+  &--warning {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: #b8730a;
+  }
+
+  &--danger {
+    background: rgba(230, 55, 87, 0.10);
+    border-color: rgba(230, 55, 87, 0.35);
+    color: var(--color-danger);
   }
 
   &__dismiss {

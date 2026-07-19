@@ -2,7 +2,7 @@
 
 A mobile-first Nuxt 4 web app for Susi Air pilots. Three primary surfaces — Sign In, Home (dashboard), Schedule (calendar) — wired against three JSON mocks. No backend; all data is read from `app/assets/data/`. Built as a technical test for Susi Air's pilot companion app brief.
 
-**Status:** production-ready. 366 unit/component specs + 132 Storybook smoke tests passing, ~98% statement coverage, installable PWA, deployable to Vercel out of the box.
+**Status:** production-ready. 404 unit/component specs + 132 Storybook smoke tests passing, ~98% statement coverage, installable PWA, deployable to Vercel out of the box.
 
 ---
 
@@ -157,8 +157,21 @@ Trade-off: longer auto-import names (`<AtomsFormBaseInput />` vs `<BaseInput />`
 ### Why `chart.js` + `vue-chartjs` over hand-rolled SVG?
 
 Two options seriously considered:
-- **chart.js + vue-chartjs** — adopted. ~50KB tree-shaken (we register only `LineController`, `LinearScale`, `CategoryScale`, `PointElement`, `LineElement`, `Tooltip`, `Filler`). Battle-tested. Real canvas (better perf than SVG at 60fps). The limit line is drawn as a flat second dataset — no custom plugin needed.
+- **chart.js + vue-chartjs** — adopted. ~50KB tree-shaken (we register only `LineController`, `LinearScale`, `CategoryScale`, `PointElement`, `LineElement`, `Tooltip`, `Filler`). Battle-tested. Real canvas (better perf than SVG at 60fps). The limit line is drawn as a flat second dataset — no custom plugin needed for the line itself.
 - **Hand-rolled SVG** — rejected. Would have meant writing axis labels, gridlines, tooltips, responsive sizing, and ARIA. More code for less functionality.
+
+### Why four custom chart.js plugins on `FlightHoursTrendChart`?
+
+chart.js covers the basics (line, points, axes, tooltip) but the dashboard's flight-hours chart needed four things chart.js doesn't do natively. Rather than switching to a heavier charting lib or hand-rolling the whole thing in SVG, we kept chart.js and added four small `Plugin<'line'>` instances registered on the chart:
+
+| Plugin | What it draws | Why a plugin (vs. built-in config) |
+|---|---|---|
+| `segmentFill` | Per-segment body fill — blue under-limit, red over-limit — extending to the x-axis | chart.js's native `fill.target: {value}` only fills the band between the line and the target line, not the full area under the curve split per-column |
+| `todayLine` | Dashed vertical line at today's x | chart.js has no first-class "marker line at a category index"; building it via a second dataset would skew the y-axis |
+| `todayLabel` | "Today" caption above the plot area | chart.js's `autoSkip` runs BEFORE `generateTickLabels`, so a tick whose index isn't in the surviving `maxTicksLimit` set cannot have its label restored by `callback` or `afterTickToLabelConversion` |
+| `chartChips` | Pill-shaped `"Xh limit"` chip anchored to the limit line + `"{value}h {date}"` chip above the peak over-limit point | chart.js has no overlay/pill primitive; canvas API via plugin is the cheapest path |
+
+All four plugins use the same pattern: they read their inputs (limit, today index, formatted labels, color palette) from custom `_segmentFill*` / `_todayIndex` / `_pointLabels` properties stashed on the dataset itself, **not from closures**. This is load-bearing — `vue-chartjs` ignores changes to the `:plugins` prop after mount, so a closure would freeze the initial `limit` value and break on range toggle (1w limit 40 → 1m limit 100 → plugin still colors against 40). Stashing on the dataset means chart.js re-reads the current values on every draw without needing a fresh plugin instance.
 
 ### Why SCSS + BEM (no Tailwind / UnoCSS)?
 
@@ -265,7 +278,7 @@ The brief's "Things to Double-Check Before Calling It Done" — every bullet ans
 - [x] **Rolling-sum chart X-axis is always ±7 days from "today" (2026-05-31).** Verified in `app/composables/useRollingSum.spec.ts` → "display window is INDEPENDENT of windowDays".
 - [x] **Document badges match the 5 worked examples in §3.1 exactly.** Verified in `app/composables/useDocumentExpiry.spec.ts` → all 5 cases (`doc_recurrent → safe`, `doc_ppc → safe`, `doc_license → expired`, `doc_medical → soon`, `doc_security → expired`).
 - [x] **Calendar tick-vs-number badge logic.** Tick only when `count_logbooks === count_schedules`. Verified in `app/components/molecules/CalendarDay.spec.ts` (4 cases).
-- [x] **Every atom/molecule/organism has a Storybook story AND a spec file.** 31 story files (132 exported stories) + 43 spec files (366 tests); 100% component coverage.
+- [x] **Every atom/molecule/organism has a Storybook story AND a spec file.** 31 story files (132 exported stories) + 43 spec files (404 tests); 100% component coverage.
 - [x] **No component reaches into `assets/data/*.json` directly except the Pinia stores.** Atoms/molecules/organisms receive data as props. Pages pull from stores and pass down. The only direct JSON import outside `stores/` is in `*.stories.ts` files (which is appropriate — stories are test fixtures, not production code).
 - [x] **Mobile-first verified at 390px.** `app/components/organisms/HoursToLimitSection.stories.ts` → `Mobile390px` story locks the viewport to 390×844. `app/assets/scss/tokens.scss` sets `overflow-x: hidden` on `html, body` as a safety net.
 - [x] **Numeric/data values are bold-weighted.** `app/assets/scss/tokens.scss` defines `--fw-bold: 700` and `--fw-extrabold: 800`; used throughout for hours, times, counts. See `.limit-card__remaining-value`, `.flight-route__icao`, `.calendar-day__base`, etc.
@@ -285,7 +298,9 @@ The brief's "Things to Double-Check Before Calling It Done" — every bullet ans
 - **Dark mode.** Tokens are already CSS custom properties, so a `[data-theme="dark"]` override would be ~30 lines of CSS.
 - **Real Susi Air logo variants.** We use the wordmark (240×60 PNG) as the only brand asset. A proper icon set (square app icon, monochrome version, etc.) would come from Susi Air's brand kit.
 - **Animated limit-card transitions.** When the chart toggle changes, the 4 LimitCards currently snap to new values. A tween would feel smoother.
-- **Stub `tap-a-date` modal.** The schedule page shows a placeholder modal ("Detail page coming soon") per brief. A real detail page would show that day's full duty log. The dashboard's new `DayFlightsModal` is the closest analog — a real component listing every leg for a day with prev/next + swipe nav across a 4-day window — but it's dashboard-only.
+- **Stub `tap-a-date` modal.** The schedule page shows a placeholder modal ("Detail page coming soon") per brief. A real detail page would show that day's full duty log. The dashboard's `DayFlightsModal` is the closest analog — a real component listing every leg for a day with prev/next + swipe nav across a 4-day window — but it's dashboard-only.
+- **Per-segment chart fill instead of per-column.** The `segmentFill` plugin colors a segment red when BOTH endpoints are over the limit (so transition segments stay blue, matching the dot coloring). A more precise visualization would split each segment at the limit-crossing point and color the under-portion blue + over-portion red — but that requires solving for the crossing x within the bezier curve, more math than the visual payoff warrants right now.
+- **Chart chips as HTML overlays instead of canvas.** The four `chartChips` plugins draw via the canvas API, which means the text content can't be selected, screen-read, or tested without mocking `ctx.measureText`/`ctx.fillText`. An HTML-overlay approach (absolute-positioned `<div>`s synced to chart pixel coords via `chart.scales.x.getPixelForValue`) would be more accessible but introduces DOM-canvas sync complexity.
 - **Analytics.** No analytics on which toggle / page / cell is most used. Real version would have PostHog or Vercel Analytics.
 
 ---
