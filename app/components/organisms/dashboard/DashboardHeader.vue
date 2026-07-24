@@ -28,7 +28,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'tap-notifications' | 'tap-avatar' | 'logout'): void
+  (e: 'tap-notifications' | 'tap-avatar' | 'logout' | 'mark-all-read'): void
+  (e: 'mark-read', id: string): void
 }>()
 
 const initials = computed(() => {
@@ -139,7 +140,15 @@ onUnmounted(() => {
           >
             <div class="dashboard-header__dropdown-header dashboard-header__notif-header">
               <p class="dashboard-header__notif-title">Notifications</p>
-              <span v-if="unreadCount > 0" class="dashboard-header__notif-count">{{ unreadCount }} new</span>
+              <button
+                v-if="unreadCount > 0"
+                type="button"
+                class="dashboard-header__notif-mark-all"
+                @click="emit('mark-all-read')"
+              >
+                Mark all as read
+              </button>
+              <span v-else class="dashboard-header__notif-count">All caught up</span>
             </div>
             <div class="dashboard-header__dropdown-divider" />
             <div class="dashboard-header__notif-list">
@@ -152,6 +161,9 @@ onUnmounted(() => {
                 class="dashboard-header__notif-item"
                 :class="{ 'dashboard-header__notif-item--unread': !item.read }"
                 role="menuitem"
+                tabindex="0"
+                @click="emit('mark-read', item.id)"
+                @keydown.enter.prevent="emit('mark-read', item.id)"
               >
                 <span class="dashboard-header__notif-icon" :class="`dashboard-header__notif-icon--${item.variant ?? 'info'}`">
                   <AtomsIcon :name="ICON_BY_VARIANT[item.variant ?? 'info']" :size="16" />
@@ -398,6 +410,27 @@ onUnmounted(() => {
     font-weight: var(--fw-semibold);
   }
 
+  &__notif-mark-all {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--color-red);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-red-dark);
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-focus);
+      border-radius: var(--radius-sm);
+    }
+  }
+
   &__notif-list {
     // Cap by both a fixed max and viewport height — prevents the
     // dropdown from running off the bottom of short / landscape phones.
@@ -422,13 +455,20 @@ onUnmounted(() => {
     padding: var(--space-3) var(--space-3);
     border-bottom: 1px solid var(--color-border);
     transition: background 0.12s ease;
+    cursor: pointer;
 
     &:last-child {
       border-bottom: 0;
     }
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background: var(--color-surface-alt);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-focus);
     }
 
     &--unread {

@@ -14,8 +14,8 @@ import { navigateTo } from '#app'
 import { useFlightHoursStore } from '~/stores/flightHours'
 import { useDocumentsStore } from '~/stores/documents'
 import { useNewsStore } from '~/stores/news'
+import { useNotificationsStore } from '~/stores/notifications'
 import { addDays } from '~/utils/format'
-import type { NotificationItem } from '~/types'
 
 definePageMeta({ layout: 'default' })
 
@@ -24,45 +24,12 @@ const schedulesStore = useSchedulesStore()
 const flightHoursStore = useFlightHoursStore()
 const documentsStore = useDocumentsStore()
 const newsStore = useNewsStore()
+const notificationsStore = useNotificationsStore()
 
 function onLogout() {
   // No real auth — just return to the sign-in screen.
   navigateTo('/')
 }
-
-// Dummy notifications for the bell dropdown. No backend; the brief ships
-// with mock data only. Mixed read/unread so the unread badge is meaningful.
-const notifications: NotificationItem[] = [
-  {
-    id: 'n1',
-    title: 'Duty starts in 2 hours',
-    body: 'PDG → PLM, Airbus ATR 72-600. Report by 14:30 LT.',
-    time: '12m ago',
-    variant: 'info',
-  },
-  {
-    id: 'n2',
-    title: 'Schedule change',
-    body: 'PKU → BTH leg added to tomorrow\'s roster.',
-    time: '1h ago',
-    variant: 'warning',
-  },
-  {
-    id: 'n3',
-    title: 'Medical certificate expires soon',
-    body: '14 days remaining — renew before 22 July 2026.',
-    time: 'Yesterday',
-    variant: 'warning',
-  },
-  {
-    id: 'n4',
-    title: 'Flight log verified',
-    body: 'Cruise log for flight SJO-320 has been countersigned.',
-    time: '2 days ago',
-    read: true,
-    variant: 'success',
-  },
-]
 
 const loading = useLoadingDelay(600)
 
@@ -95,9 +62,11 @@ function openDayFlights() {
       :pilot-name="pilotStore.name"
       :pilot-id="pilotStore.pilotId"
       :total-flight-hours="pilotStore.totalFlightHours"
-      :notifications="notifications"
+      :notifications="notificationsStore.sortedNotifications"
       :today="schedulesStore.today"
       @logout="onLogout"
+      @mark-read="notificationsStore.markAsRead"
+      @mark-all-read="notificationsStore.markAllAsRead"
     />
 
     <section class="home-page__section">
