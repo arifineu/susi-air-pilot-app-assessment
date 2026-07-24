@@ -76,6 +76,82 @@ describe('DashboardHeader', () => {
     expect(wrapper.find('.dashboard-header__logout').exists()).toBe(false)
   })
 
+  describe('notifications dropdown — mark-as-read interactions', () => {
+    function openDropdown(wrapper: ReturnType<typeof mount>) {
+      return wrapper.find('.dashboard-header__notif').trigger('click')
+    }
+
+    it('shows "Mark all as read" button when there are unread notifications', async () => {
+      const wrapper = mount(DashboardHeader, {
+        props: {
+          pilotName: 'X',
+          notifications: [
+            { id: 'a', title: 'A', read: false },
+            { id: 'b', title: 'B', read: true },
+          ],
+        },
+      })
+      await openDropdown(wrapper)
+      const btn = wrapper.find('.dashboard-header__notif-mark-all')
+      expect(btn.exists()).toBe(true)
+      expect(btn.text()).toBe('Mark all as read')
+    })
+
+    it('hides the mark-all button and shows "All caught up" when no unread notifications', async () => {
+      const wrapper = mount(DashboardHeader, {
+        props: {
+          pilotName: 'X',
+          notifications: [{ id: 'a', title: 'A', read: true }],
+        },
+      })
+      await openDropdown(wrapper)
+      expect(wrapper.find('.dashboard-header__notif-mark-all').exists()).toBe(false)
+      expect(wrapper.find('.dashboard-header__notif-count').text()).toBe('All caught up')
+    })
+
+    it('emits mark-all-read when the button is clicked', async () => {
+      const wrapper = mount(DashboardHeader, {
+        props: {
+          pilotName: 'X',
+          notifications: [{ id: 'a', title: 'A', read: false }],
+        },
+      })
+      await openDropdown(wrapper)
+      await wrapper.find('.dashboard-header__notif-mark-all').trigger('click')
+      expect(wrapper.emitted('mark-all-read')).toHaveLength(1)
+    })
+
+    it('emits mark-read with the notification id when an item is clicked', async () => {
+      const wrapper = mount(DashboardHeader, {
+        props: {
+          pilotName: 'X',
+          notifications: [
+            { id: 'n1', title: 'First', read: false },
+            { id: 'n2', title: 'Second', read: false },
+          ],
+        },
+      })
+      await openDropdown(wrapper)
+      const items = wrapper.findAll('.dashboard-header__notif-item')
+      await items[0]!.trigger('click')
+      expect(wrapper.emitted('mark-read')).toEqual([['n1']])
+      await items[1]!.trigger('click')
+      expect(wrapper.emitted('mark-read')).toEqual([['n1'], ['n2']])
+    })
+
+    it('emits mark-read when Enter is pressed on a focused item (keyboard a11y)', async () => {
+      const wrapper = mount(DashboardHeader, {
+        props: {
+          pilotName: 'X',
+          notifications: [{ id: 'k1', title: 'K', read: false }],
+        },
+      })
+      await openDropdown(wrapper)
+      await wrapper.find('.dashboard-header__notif-item').trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('mark-read')).toEqual([['k1']])
+    })
+  })
+
   describe('welcome block (pilot name + total flight hours)', () => {
     it('renders a "Welcome back," greeting when pilotName is provided', () => {
       const wrapper = mount(DashboardHeader, { props: { pilotName: 'John Doe' } })
