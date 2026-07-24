@@ -109,6 +109,12 @@ export interface NavItem {
 }
 
 /** Notification bell entry (DashboardHeader dropdown). */
+export type NotificationCategory =
+  | 'upcoming-flight'
+  | 'schedule-change'
+  | 'document-expiry'
+  | 'flight-verified'
+
 export interface NotificationItem {
   id: string
   title: string
@@ -117,4 +123,6 @@ export interface NotificationItem {
   time?: string
   read?: boolean
   variant?: 'info' | 'success' | 'warning' | 'danger'
+  /** Source category — drives future filtering / styling per source. */
+  category?: NotificationCategory
 }
